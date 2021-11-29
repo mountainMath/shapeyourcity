@@ -29,9 +29,18 @@ get_all_projects <- function(){
     c<-httr::content(r)
     
     
-    parse_project_data <- function(data){
+    parse_project_data_old <- function(data){
+      
       tibble(id=data$id,type=data$type,url=data$links$self) %>%
         bind_cols(data$attributes[unlist(data$attributes %>% lapply(length))==1] %>% as_tibble())
+    }
+    
+    parse_project_data <- function(data){
+      attributes <- data$attributes[unlist(data$attributes %>% lapply(length))>=1] %>% 
+        as_tibble() %>%
+        summarise_all(function(d) unique(d) %>% paste0(.,collapse = ", "))
+      tibble(id=data$id,type=data$type,url=data$links$self) %>%
+        bind_cols(attributes)
     }
     
     result <- bind_rows(result,c$data %>% lapply(parse_project_data)) %>% bind_rows()

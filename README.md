@@ -1,3 +1,15 @@
+README
+================
+Last updated at 29 November, 2021 - 12:39
+
 # shapeyourcity
 
-A simple scraper of the [City of Vancouver Shape Your City](https://shapeyourcity.ca) project API.
+A simple scraper of the [City of Vancouver Shape Your
+City](https://shapeyourcity.ca) project API.
+
+The latest version of the data can be downloaded at
+<https://github.com/mountainMath/shapeyourcity/raw/main/data/shapeyourcity.csv>.
+
+# Current project status
+
+![](README_files/figure-gfm/overview-by-type-1.png)<!-- -->

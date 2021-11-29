@@ -3,6 +3,7 @@ on:
     paths:
       - R/scrape_projects.R
       - R/shapeyourcity.R
+      - README.Rmd
       - .github/workflows/shapeyourcity_scrape.yaml
   schedule:
     - cron: "35 0,12 * * *"
@@ -31,13 +32,19 @@ jobs:
           install.packages("rvest")
           install.packages("jsonlite")
           install.packages("httr")
+          install.packages("ggplot2")
         shell: Rscript {0}
       - name: Scrape projects
         run: |
           Rscript R/scrape_projects.R
+      - name: Update README
+        run: |
+          Rscript -e 'rmarkdown::render("README.Rmd")'
       - name: Commit results
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git commit -m 'data/shapeyourcity.csv' || echo "No changes to commit"
+          git commit -m 'README.md' || echo "No changes to commit"
+          git commit -ma 'README_files' || echo "No changes to commit"
           git push origin || echo "No changes to commit"

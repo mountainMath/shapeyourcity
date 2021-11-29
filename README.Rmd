@@ -1,0 +1,46 @@
+---
+title: "README"
+author: ""
+date: "Last updated at `r format(Sys.time(), '%d %B, %Y - %H:%M',tz='America/Vancouver')`"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+library(dplyr)
+library(readr)
+library(ggplot2)
+```
+
+# shapeyourcity
+
+A simple scraper of the [City of Vancouver Shape Your City](https://shapeyourcity.ca) project API.
+
+The latest version of the data can be downloaded at [https://github.com/mountainMath/shapeyourcity/raw/main/data/shapeyourcity.csv](https://github.com/mountainMath/shapeyourcity/raw/main/data/shapeyourcity.csv).
+
+# Current project status
+```{r overview-by-type}
+data <- read_csv(here::here("data/shapeyourcity.csv")) %>%
+  mutate(Approved=grepl("Approved",`project-tag-list`,ignore.case = TRUE),
+         Development=grepl("Development",`project-tag-list`,ignore.case = TRUE),
+         Rezoning=grepl("Rezoning",`project-tag-list`,ignore.case = TRUE),
+         Citywide=grepl("Citywide",`project-tag-list`,ignore.case = TRUE),
+         Transportation=grepl("Transportation",`project-tag-list`,ignore.case = TRUE)) 
+
+data %>%
+  mutate(type=case_when(Rezoning~"Rezoning",Development~"Development",Citywide~"Citywide",
+                        Transportation~"Transportation",TRUE~"Other")) %>%
+  count(state,type) %>%
+  ggplot(aes(x=state,y=n,fill=type)) +
+  geom_bar(stat="identity") +
+  labs(title="Overview over City of Vancouver ShapeYourCity projects",
+       fill="Project tag",
+       y="Number of consultations",
+       x="Project state",
+       caption="Data: ShapeYourCity")
+```
+

@@ -34,8 +34,7 @@ jobs:
         shell: Rscript {0}
       - name: Scrape projects
         run: |
-          source('R/scrape_projects.R')
-        shell: Rscript {0} 
+          Rscript R/scrape_projects.R
      - name: Commit results
         run: |
           git config --local user.email "actions@github.com"

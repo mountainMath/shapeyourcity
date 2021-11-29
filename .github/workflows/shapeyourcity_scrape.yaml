@@ -33,6 +33,7 @@ jobs:
           install.packages("jsonlite")
           install.packages("httr")
           install.packages("ggplot2")
+          install.packages("rmarkdown")
         shell: Rscript {0}
       - name: Scrape projects
         run: |

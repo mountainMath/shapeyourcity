@@ -34,7 +34,7 @@ jobs:
         shell: Rscript {0}
       - name: Scrape projects
         run: |
-          srouce('R/scrape_projects.R')
+          source('R/scrape_projects.R')
         shell: Rscript {0} 
      - name: Commit results
         run: |

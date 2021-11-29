@@ -24,7 +24,7 @@ get_all_projects <- function(){
     
     r<-httr::GET(url,httr::add_headers(Authorization=paste0("Bearer ",token)))
     
-    r$status_code
+    #r$status_code
     
     c<-httr::content(r)
     

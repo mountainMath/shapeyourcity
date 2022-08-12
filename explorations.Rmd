@@ -1,0 +1,56 @@
+---
+title: "explorations"
+author: "Jens von Bergmann"
+date: "02/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+data <- read_csv("data/shapeyourcity.csv") %>%
+  mutate(Approved=grepl("Approved",`project-tag-list`,ignore.case = TRUE),
+         Development=grepl("Development",`project-tag-list`,ignore.case = TRUE),
+         Rezoning=grepl("Rezoning",`project-tag-list`,ignore.case = TRUE),
+         Citywide=grepl("Citywide",`project-tag-list`,ignore.case = TRUE),
+         Transportation=grepl("Transportation",`project-tag-list`,ignore.case = TRUE),
+         Conditional=grepl("Director of Planning",`archival-reason-message`,ignore.case = TRUE)) 
+```
+
+```{r}
+state_colours <- setNames(sanzo::duos$c047,c("published","archived"))
+state_labels <- c("published"="Active","archived"="Archived")
+data %>% slice_max(order_by=`view-count`,n=15) %>%
+  ggplot(aes(x=reorder(name,`view-count`),y=`view-count`,fill=state)) +
+  geom_bar(stat="identity") +
+  coord_flip() +
+  scale_y_continuous(labels=scales::comma) +
+  scale_fill_manual(values=state_colours,labels=state_labels) +
+  scale_x_discrete(labels=function(d)str_wrap(d,width=40)) +
+  labs(title="View count on City of Vacouver ShapeYourCity",
+       subtitle = "Top 15 items",
+       x="Engagement item",y="Number of views",fill="Status",
+       caption="MountainMath, Data: ShapeYourCity API")
+```
+
+
+```{r}
+data %>% slice_max(order_by=`contribution-count`,n=15) %>%
+  ggplot(aes(x=reorder(name,`contribution-count`),y=`contribution-count`,fill=state)) +
+  geom_bar(stat="identity") +
+  coord_flip() +
+  scale_y_continuous(labels=scales::comma) +
+  scale_fill_manual(values=state_colours,labels=state_labels) +
+  scale_x_discrete(labels=function(d)str_wrap(d,width=40)) +
+  labs(title="Contributions count on City of Vacouver ShapeYourCity",
+       subtitle = "Top 15 items",
+       x="Engagement item",y="Number of contributions",fill="Status",
+       caption="MountainMath, Data: ShapeYourCity API")
+```
+
+
+```{r}
+data %>% filter(Rezoning|Conditional) %>%
+  count(Rezoning)
+```
+

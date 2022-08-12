@@ -23,7 +23,7 @@ A simple scraper of the [City of Vancouver Shape Your City](https://shapeyourcit
 The latest version of the data can be downloaded at [https://github.com/mountainMath/shapeyourcity/raw/main/data/shapeyourcity.csv](https://github.com/mountainMath/shapeyourcity/raw/main/data/shapeyourcity.csv).
 
 # Current project status
-```{r overview-by-type}
+```{r overview-by-type, dpi=150}
 data <- read_csv(here::here("data/shapeyourcity.csv")) %>%
   mutate(Approved=grepl("Approved",`project-tag-list`,ignore.case = TRUE),
          Development=grepl("Development",`project-tag-list`,ignore.case = TRUE),
@@ -41,6 +41,6 @@ data %>%
        fill="Project tag",
        y="Number of consultations",
        x="Project state",
-       caption="Data: ShapeYourCity")
+       caption=paste0("Data: ShapeYourCity (most recent entry ",strftime(max(data$`published-at`),"%Y-%m-%d"),")"))
 ```
 

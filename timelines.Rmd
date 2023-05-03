@@ -1,0 +1,21 @@
+---
+title: "timelines"
+author: "Jens von Bergmann"
+date: "2022-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+source(here::here("R/shapeyourcity.R"))
+```
+
+```{r}
+results <- get_all_projects()
+
+key_dates <- get_key_dates_for_all_results(results)
+
+write_csv(key_dates,here::here(paste0("data/","key_dates_",Sys.Date(),".csv")))
+```
+

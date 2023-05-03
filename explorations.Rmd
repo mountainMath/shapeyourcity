@@ -54,3 +54,57 @@ data %>% filter(Rezoning|Conditional) %>%
   count(Rezoning)
 ```
 
+```{r}
+timelines <- read_csv("data/key_dates_2023-01-11.csv") |>
+  left_join(data,by="id")
+
+plot_data <- timelines |> 
+  filter(!Rezoning & Conditional) |>
+  mutate(date = gsub("^.+ → ","",date_string)) |>
+  mutate(Date=as.Date(date,"%b %d %Y")) |>
+  mutate(Name=gsub(" development application","",name)) |>
+  filter(grepl(" development application$",name)) |>
+  mutate(Type=case_when(grepl("approved",title,ignore.case = TRUE) ~ "DB approved",
+                        grepl("withdrawn",title,ignore.case = TRUE) ~ "Withdrawn",
+                        grepl("cancelled",title,ignore.case = TRUE) ~ "Cancelled",
+                        grepl("received",title,ignore.case = TRUE) ~ "Received",
+                        grepl("open house",title,ignore.case = TRUE) ~ "Open house",
+                        grepl("comments",title,ignore.case = TRUE) ~ "Comments",
+                        grepl("issued|issed",title,ignore.case = TRUE) ~ "DP issued",
+                        grepl("refused",title,ignore.case = TRUE) ~ "DP refused",
+                        TRUE ~ "Other"))
+
+
+plot_data |> filter(Type=="Approved") |> pull(title) |> unique()
+
+pd <- plot_data |>
+  filter(Type %in% c("Received","DP issued")) |>
+  group_by(Name,Type) |>
+  slice_min(Date,n=1) |>
+  group_by(Name) |>
+  mutate(n=n()) |>
+  filter(n==2) |>
+  select(Date,Name,Type) |>
+  pivot_wider(names_from=Type,values_from=Date) |>
+  mutate(days=`DP issued`-Received) 
+
+ggplot(pd,aes(x=(days)))  +
+  geom_histogram() +
+  labs(title="Time from officially recieving DP to issue date",
+       x="Number of days",y="Number of DP applications")
+```
+
+```{r}
+plot_data |>
+  #filter(Name %in% pd$Name) |>
+  inner_join(pd,by="Name") |>
+  ggplot(aes(y=reorder(Name,days),x=Date,colour=Type)) +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2")
+```
+
+```{r}
+plot_data |> filter(Type=="DP issued") |> filter(!grepl("cannabis",name)) |> filter(grepl("daycare|childcare|child care|child|care",description,ignore.case=TRUE))
+```
+
+

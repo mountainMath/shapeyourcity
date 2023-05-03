@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 shapeyourcity.Rproj
+data/key_dates_*
+.DS_Store

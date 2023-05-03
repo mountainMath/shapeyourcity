@@ -48,3 +48,38 @@ get_all_projects <- function(){
   }
   result
 }
+
+
+get_key_dates_for_page <- function(url){
+  r<-rvest::read_html(url)
+  
+  data <- r %>% 
+    rvest::html_nodes("div.widget_key_date ul li") %>%
+    lapply(function(n){
+      title_string <- n %>% 
+        rvest::html_node(".key-date-title") %>% 
+        rvest::html_text() %>%
+        trimws() %>% 
+        unlist()
+      date_string <- n %>% 
+        rvest::html_node(".key-date-date") %>% 
+        rvest::html_text() %>%
+        trimws() %>% 
+        unlist()
+      tibble(title=title_string,date_string=date_string)
+    }) |>
+    bind_rows() |>
+    mutate(url=url)
+}
+
+get_key_dates_for_pages <- function(urls){
+  urls %>% lapply(get_key_dates_for_page)
+}
+
+
+get_key_dates_for_all_results <- function(results){
+  get_key_dates_for_pages(results$url) %>%
+    bind_rows() %>%
+    left_join(results %>% select(id,url),by="url")
+}
+
